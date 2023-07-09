@@ -1,0 +1,18 @@
+Square がクリックされると、Board から渡された onClick 関数がコールされます。どのようになっているのかおさらいしましょう。
+
+組み込みの DOM コンポーネントである <button> に onClick プロパティが設定されているため React がクリックに対するイベントリスナを設定します。
+ボタンがクリックされると、React は Square の render() メソッド内に定義されている onClick のイベントハンドラをコールします。
+このイベントハンドラが this.props.onClick() をコールします。Square の onClick プロパティは Board から渡されているものです。
+Board は Square に onClick={() => this.handleClick(i)} を渡していたので、Square はクリックされたときに Board の handleClick(i) を呼び出します。
+まだ handleClick() は定義していないので、コードがクラッシュします。Square をクリックすると、“this.handleClick is not a function” といった赤いエラー画面が表示されるはずです。
+補足
+
+DOM 要素である <button> は組み込みコンポーネントなので、onClick 属性は React にとって特別な意味を持っています。Square のようなカスタムコンポーネントでは、名前の付け方はあなたの自由です。Square の onClick プロパティや Board の handleClick メソッドについては別の名前を付けたとしても同じように動作します。React では、イベントを表す props には on[Event] という名前、イベントを処理するメソッドには handle[Event] という名前を付けるのが慣習となっています。
+
+
+
+これらの変更を加えれば、再びマス目をクリックすると値が書き込まれるようになります。しかし今や、状態は個々の Square コンポーネントではなく Board コンポーネント内に保存されています。Board の state が変更されると、個々の Square コンポーネントも自動的に再レンダーされます。全てのマス目の状態を Board コンポーネント内で保持するようにしたことで、この後でどちらが勝者か判定できるようになります。
+
+Square コンポーネントはもう自分で state を管理しないようになったので、Board コンポーネントから値を受け取って、クリックされた時はそのことを Board コンポーネントに伝えるだけになりました。React 用語でいうと、Square コンポーネントは制御されたコンポーネント (controlled component) になったということです。Board が Square コンポーネントを全面的に制御しています。
+
+handleClick 内では、squares を直接変更する代わりに、.slice() を呼んで配列のコピーを作成していることに注意してください。次のセクションで、なぜ squares 配列のコピーを作成しているのか説明します。
